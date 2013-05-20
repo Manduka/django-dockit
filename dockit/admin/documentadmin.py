@@ -335,7 +335,7 @@ class SchemaAdmin(object):
         Get a form Field for a ManyToManyField.
         """
         request = kwargs.pop('request', None)
-        if True: #prop.name in self.raw_id_fields:
+        if prop.name in self.raw_id_fields:
             kwargs['widget'] = self.raw_id_widget_for_property(prop,widgets.ManyToManyRawIdWidget)
             kwargs['help_text'] = ''
         elif prop.name in (list(self.filter_vertical) + list(self.filter_horizontal)):
