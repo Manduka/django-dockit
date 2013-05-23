@@ -120,7 +120,10 @@ def document_to_dict(document, instance, properties=None, exclude=None, dotpath=
             prop = document._meta.fields[prop_name]
             if not properties and not prop.editable:
                 continue
-        data[prop_name] = src_data[prop_name]
+        try:
+            data[prop_name] = src_data[prop_name]
+        except:
+            data[prop_name] = None
     return data
 
 def fields_for_document(document, properties=None, exclude=None, formfield_callback=None, dotpath=None):

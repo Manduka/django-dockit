@@ -56,16 +56,6 @@ class Manager(object):
         except MultipleObjectsReturned, error:
             raise MultipleObjectsReturned('Duplicate natural keys found! Lookup parameters were %s' % (hashval or kwargs))
         except ObjectDoesNotExist, error:
-            raise ObjectDoesNotExist('Natural key not found! Lookup paramets were %s' % (hashval or kwargs))
+            raise ObjectDoesNotExist('Natural key not found! Lookup parameters were %s' % (hashval or kwargs))
 
-'''
-register_indexer(backend, "equals", index_cls)
-
-Book.objects.all().index('author_name__iexact').commit()
-Book.objects.all().index('author_name__iexact').filter(author_name__iexact='Jane Doe')
-#or
-Book.objects.all().filter(author_name__iexact='Jane Doe')
-
-Book.objects.all().index('author_name').values()
-'''
 
