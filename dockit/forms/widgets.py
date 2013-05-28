@@ -26,7 +26,7 @@ class PrimitiveListWidget(Widget):
         field = self.subfield
         widget = field.widget
         
-        parts = ['<div class="list-row form-row"></div>' % widget.render(name, value[i], None) for i in range(field_count)]
+        parts = ['<div class="list-row form-row">%s</div>' % widget.render(name, value[i], None) for i in range(field_count)]
         output = u'<fieldset%s style="float: left;" class="primitivelistfield" name="%s">%s</fieldset>' % (flatatt(final_attrs), name, u''.join(parts))
         return mark_safe(output)
     
