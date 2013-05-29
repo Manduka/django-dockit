@@ -15,21 +15,28 @@ class PrimitiveListWidget(Widget):
     def __init__(self, subfield, attrs=None):
         self.subfield = subfield
         super(PrimitiveListWidget, self).__init__(attrs)
-    
+
+    def get_formset(self, **kwargs):
+        class InsetFields(forms.Form):
+            value = self.subfield
+
+        formset = formset_factory(InsetFields, can_order=True, can_delete=True)
+        return formset(**kwargs)
+
     def render(self, name, value, attrs=None):
         if not isinstance(value, list):
             value = self.decompress(value)
-        
-        field_count = len(value)
+
         final_attrs = self.build_attrs(attrs)
-        
-        field = self.subfield
-        widget = field.widget
-        
-        parts = ['<div class="list-row form-row">%s</div>' % widget.render(name, value[i], None) for i in range(field_count)]
-        output = u'<fieldset%s style="float: left;" class="primitivelistfield" name="%s">%s</fieldset>' % (flatatt(final_attrs), name, u''.join(parts))
+
+        initial=[{'value': val} for val in value]
+        formset = self.get_formset(initial=initial, prefix=name)
+        parts = ['<div class="list-row form-row"><table>%s</table></div>' % form.as_table() for form in formset]
+        parts.append('<div id="%s-empty" class="list-row form-row empty-row"><table>%s</table></div>' % (name, formset.empty_form.as_table()))
+        output = u'<div%s style="float: left;" class="primitivelistfield" data-prefix="%s">%s %s</div>' % (flatatt(final_attrs), name, formset.management_form, u''.join(parts))
         return mark_safe(output)
-    
+
+
     def value_from_datadict(self, data, files, name):
         value = list()
         if hasattr(data, 'getlist'):
@@ -42,7 +49,7 @@ class PrimitiveListWidget(Widget):
             val['ORDER'] = i
             value.append(val)
         return value
-    
+
     def _has_changed(self, initial, data):
         if initial is None:
             initial = [u'' for x in range(0, len(data))]
@@ -54,7 +61,7 @@ class PrimitiveListWidget(Widget):
         #        return True
         return True #CONSIDER where is my name?
         return False
-    
+
     def decompress(self, value):
         """
         Returns a list of decompressed values for the given compressed value.
@@ -72,7 +79,7 @@ class PrimitiveListWidget(Widget):
             media += Media(definition)
         return media
     media = property(_get_media)
-    
+
     def __deepcopy__(self, memo):
         obj = super(PrimitiveListWidget, self).__deepcopy__(memo)
         obj.subfield = copy.deepcopy(self.subfield)
