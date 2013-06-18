@@ -37,7 +37,7 @@
                 });
             }
             $(rows).formset({
-                prefix: $(this).attr('name'),
+                prefix: $(this).attr('data-prefix'),
                 formCssClass: "dynamic-form",
                 deleteCssClass: "inline-deletelink",
                 deleteText: "Remove",

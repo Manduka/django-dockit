@@ -17,11 +17,14 @@ class PrimitiveListWidget(Widget):
         super(PrimitiveListWidget, self).__init__(attrs)
 
     def get_formset(self, **kwargs):
+        klass = self.get_formset_class()
+        formset = formset_factory(klass, can_order=True, can_delete=True)
+        return formset(**kwargs)
+
+    def get_formset_class(self):
         class InsetFields(forms.Form):
             value = self.subfield
-
-        formset = formset_factory(InsetFields, can_order=True, can_delete=True)
-        return formset(**kwargs)
+        return InsetFields
 
     def render(self, name, value, attrs=None):
         if not isinstance(value, list):
@@ -38,29 +41,15 @@ class PrimitiveListWidget(Widget):
 
 
     def value_from_datadict(self, data, files, name):
+        formset = self.get_formset(data=data, files=files, prefix=name)
         value = list()
-        if hasattr(data, 'getlist'):
-            source = data.getlist(name)
-        else:
-            source = data.get(name, [])
-        for i, entry in enumerate(source):
+        for form in formset.forms:
             val = dict()
-            val['value'] = entry
-            val['ORDER'] = i
+            for key in ('value', ORDERING_FIELD_NAME, DELETION_FIELD_NAME):
+                val[key] = form.fields[key].widget.value_from_datadict(data, files, form.add_prefix(key))
             value.append(val)
         return value
 
-    def _has_changed(self, initial, data):
-        if initial is None:
-            initial = [u'' for x in range(0, len(data))]
-        else:
-            if not isinstance(initial, list):
-                initial = self.decompress(initial)
-        #for widget, initial, data in zip(self.widgets, initial, data):
-        #    if widget._has_changed(initial, data):
-        #        return True
-        return True #CONSIDER where is my name?
-        return False
 
     def decompress(self, value):
         """
