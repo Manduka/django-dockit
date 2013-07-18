@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management.color import no_style
 from django.db.models import get_apps
-from django.utils.itercompat import product
+from itertools import product
 
 from dockit.core import serializers
 
