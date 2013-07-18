@@ -4,7 +4,7 @@ from django.utils.encoding import force_unicode
 from django.forms.util import flatatt
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
-from django.utils import simplejson as json
+import json
 
 from dockit.forms.fields import HiddenJSONField
 

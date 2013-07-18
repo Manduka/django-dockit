@@ -1,4 +1,4 @@
-from django.utils import simplejson
+import json
 from django.core.serializers.json import DjangoJSONEncoder
 
 from dockit.backends.base import BaseDocumentStorage, BaseIndexStorage
@@ -14,7 +14,7 @@ class DocumentQuery(BaseDocumentQuery):
         self.queryset = queryset
     
     def wrap(self, entry):
-        data = simplejson.loads(entry.data)
+        data = json.loads(entry.data)
         data['_pk'] = entry.pk
         return self.document.to_python(data)
     
@@ -57,7 +57,7 @@ class DocumentQuery(BaseDocumentQuery):
 
 class IndexedDocumentQuery(DocumentQuery):
     def wrap(self, entry):
-        data = simplejson.loads(entry.data)
+        data = json.loads(entry.data)
         data['_pk'] = entry.doc_id
         return self.document.to_python(data)
     
@@ -151,7 +151,7 @@ class ModelDocumentStorage(BaseDocumentStorage):
     
     def save(self, doc_class, collection, data):
         doc_id = self.get_id(data)
-        encoded_data = simplejson.dumps(data, cls=DjangoJSONEncoder)
+        encoded_data = json.dumps(data, cls=DjangoJSONEncoder)
         document = DocumentStore(collection=collection, data=encoded_data)
         if doc_id is not None:
             document.pk = doc_id
@@ -164,7 +164,7 @@ class ModelDocumentStorage(BaseDocumentStorage):
             document = DocumentStore.objects.get(collection=collection, pk=doc_id)
         except DocumentStore.DoesNotExist:
             raise doc_class.DoesNotExist
-        data = simplejson.loads(document.data)
+        data = json.loads(document.data)
         data[self.get_id_field_name()] = document.pk
         return data
     

@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import simplejson
+import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -117,7 +117,7 @@ class RegisteredIndexManager(models.Manager):
                     return False
         
         #index params
-        encoded_data = simplejson.dumps(data, cls=DjangoJSONEncoder)
+        encoded_data = json.dumps(data, cls=DjangoJSONEncoder)
         index_doc, created = RegisteredIndexDocument.objects.get_or_create(index=registered_index, doc_id=doc_id, defaults={'data':encoded_data})
         if not created:
             index_doc.data = encoded_data

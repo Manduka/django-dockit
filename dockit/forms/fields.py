@@ -3,7 +3,7 @@ from django.forms.widgets import HiddenInput, SelectMultiple, MultipleHiddenInpu
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode, smart_unicode
-from django.utils import simplejson as json
+import json
 
 from dockit.forms.widgets import PrimitiveListWidget
 
